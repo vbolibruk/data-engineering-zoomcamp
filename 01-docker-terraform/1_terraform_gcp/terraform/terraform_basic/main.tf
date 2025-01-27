@@ -13,7 +13,10 @@ provider "google" {
   project = "unique-alpha-411912"
   region  = "us-central1"
 }
-
+variable "project" {
+  description = "unique-alpha-411912"
+  type        = string
+}
 
 
 resource "google_storage_bucket" "data-lake-bucket" {

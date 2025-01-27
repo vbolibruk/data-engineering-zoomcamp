@@ -1,24 +1,24 @@
 import pandas as pd
 
-# Load the CSV file into a pandas DataFrame
-df = pd.read_csv('green_tripdata_2019-09.csv')
+# Load data from file
+file_path = 'green_tripdata_2019-10.csv'  # Replace with the actual file path
+df = pd.read_csv(file_path)
 
-# Convert timestamp columns to datetime format
+# Ensure the pickup datetime column is in datetime format
 df['lpep_pickup_datetime'] = pd.to_datetime(df['lpep_pickup_datetime'])
 
-# Filter the dataset for each specified date and calculate the total trip distance for each day
-dates = ['2019-09-18', '2019-09-16', '2019-09-26', '2019-09-21']
+# Extract the date part from the pickup datetime
+df['pickup_date'] = df['lpep_pickup_datetime'].dt.date
 
-max_distance = 0
-max_distance_day = None
+# Find the longest trip for each day
+longest_trips = df.loc[df.groupby('pickup_date')['trip_distance'].idxmax()]
 
-for date in dates:
-    trips_on_date = df[df['lpep_pickup_datetime'].dt.date == pd.to_datetime(date).date()]
-    total_distance = trips_on_date['trip_distance'].sum()
-    
-    if total_distance > max_distance:
-        max_distance = total_distance
-        max_distance_day = date
+# Find the pick-up day with the longest trip distance overall
+longest_trip_day = longest_trips.loc[longest_trips['trip_distance'].idxmax()]
 
-print(f'The pickup day with the largest total trip distance is {max_distance_day} with a distance of {max_distance:.2f} miles.')
-# The pickup day with the largest total trip distance is 2019-09-26 with a distance of 58759.94 miles.
+# Display the result
+print("Longest trip for each day:")
+print(longest_trips[['pickup_date', 'trip_distance']])
+
+print("\nDay with the overall longest trip:")
+print(longest_trip_day[['pickup_date', 'trip_distance']])
